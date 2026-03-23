@@ -1,0 +1,13 @@
+{
+  "name": "makingmonsters",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "cucumber-js --config cucumber.json"
+  },
+  "devDependencies": {
+    "@cucumber/cucumber": "^11.3.0",
+    "puppeteer": "^24.6.1"
+  }
+}
