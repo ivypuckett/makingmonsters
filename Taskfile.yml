@@ -1,0 +1,35 @@
+version: '3'
+
+tasks:
+  # --- Client (frontend) tasks ---
+
+  client:install:
+    desc: Install frontend dependencies
+    dir: client
+    cmds:
+      - npm install
+
+  client:dev:
+    desc: Start frontend dev server with hot module replacement
+    dir: client
+    cmds:
+      - npm run dev
+
+  client:build:
+    desc: Build frontend for production (outputs to client/dist)
+    dir: client
+    cmds:
+      - npm run build
+
+  client:preview:
+    desc: Preview the production build locally
+    dir: client
+    cmds:
+      - npm run preview
+
+  # --- Default task ---
+
+  default:
+    desc: Show available tasks
+    cmds:
+      - task --list
