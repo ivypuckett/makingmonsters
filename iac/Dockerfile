@@ -20,7 +20,7 @@ WORKDIR /app
 COPY --from=builder /build/pocketbase .
 
 # pb_public is populated at build time with the compiled Svelte frontend
-COPY client/dist/ ./pb_public/
+COPY build/public/ ./pb_public/
 
 EXPOSE 8090
 

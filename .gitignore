@@ -29,12 +29,12 @@ go.work.sum
 
 # Frontend
 client/node_modules/
-client/dist/
 
-# PocketBase runtime
-server/pocketbase
+# Build output
+build/
+
+# PocketBase runtime data
 server/pb_data/
-server/pb_public/
 
 # OpenTofu
 iac/.terraform/

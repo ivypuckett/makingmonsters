@@ -13,7 +13,7 @@ tasks:
       - npm run dev
 
   watch:
-    desc: Watch source files, rebuild, and sync output to server/pb_public/
+    desc: Watch source files and rebuild to build/public/
     deps: [install]
     watch: true
     sources:
@@ -22,11 +22,9 @@ tasks:
       - vite.config.js
     cmds:
       - npm run build
-      - rm -rf ../server/pb_public
-      - cp -r dist/. ../server/pb_public/
 
   build:
-    desc: Build for production (outputs to dist/)
+    desc: Build for production (outputs to build/public/)
     deps: [install]
     cmds:
       - npm run build
