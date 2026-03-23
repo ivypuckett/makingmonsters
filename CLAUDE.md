@@ -125,3 +125,5 @@ No `.env` file exists yet. When the backend is added, document required variable
 - There is no linter or formatter configured yet; maintain consistency with existing code style
 - No CI/CD pipeline exists; changes are manually built and deployed
 - The `client/` directory is a self-contained Vite app; all frontend work happens there
+- If a file exceeds 400 lines, flag this to the user and suggest splitting it into smaller modules
+- Keep this CLAUDE.md up to date as the project evolves — update it when new tools, directories, conventions, or workflows are introduced
