@@ -1,0 +1,25 @@
+version: '3'
+
+tasks:
+  install:
+    desc: Install frontend dependencies
+    cmds:
+      - npm install
+
+  dev:
+    desc: Start dev server with hot module replacement
+    deps: [install]
+    cmds:
+      - npm run dev
+
+  build:
+    desc: Build for production (outputs to dist/)
+    deps: [install]
+    cmds:
+      - npm run build
+
+  preview:
+    desc: Preview the production build locally
+    deps: [build]
+    cmds:
+      - npm run preview

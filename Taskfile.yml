@@ -1,81 +1,24 @@
 version: '3'
 
+includes:
+  client:
+    taskfile: ./client/Taskfile.yml
+    dir: ./client
+  server:
+    taskfile: ./server/Taskfile.yml
+    dir: ./server
+  iac:
+    taskfile: ./iac/Taskfile.yml
+    dir: ./iac
+
 tasks:
-  # --- Client (frontend) tasks ---
-
-  client:install:
-    desc: Install frontend dependencies
-    dir: client
-    cmds:
-      - npm install
-
-  client:dev:
-    desc: Start frontend dev server with hot module replacement
-    dir: client
-    cmds:
-      - npm run dev
-
-  client:build:
-    desc: Build frontend for production (outputs to client/dist)
-    dir: client
-    cmds:
-      - npm run build
-
-  client:preview:
-    desc: Preview the production build locally
-    dir: client
-    cmds:
-      - npm run preview
-
-  # --- Server (PocketBase) tasks ---
-
-  server:init:
-    desc: Download Go dependencies for the server (run once after cloning)
-    dir: server
-    cmds:
-      - go mod tidy
-
-  server:build:
-    desc: Compile the PocketBase server binary to server/pocketbase
-    dir: server
-    cmds:
-      - go build -o pocketbase .
-
-  server:dev:
-    desc: Run the PocketBase server locally (serves on :8090)
-    dir: server
-    cmds:
-      - go run . serve
-
-  # --- Infrastructure (fly.io + OpenTofu) tasks ---
-
-  iac:init:
-    desc: Initialize OpenTofu providers (run once)
-    dir: iac
-    cmds:
-      - tofu init
-
-  iac:plan:
-    desc: Preview infrastructure changes
-    dir: iac
-    cmds:
-      - tofu plan
-
-  iac:apply:
-    desc: Apply infrastructure changes
-    dir: iac
-    cmds:
-      - tofu apply
-
   deploy:
     desc: Build frontend, then deploy the full stack to fly.io
+    deps: [client:build]
     cmds:
-      - task: client:build
       - flyctl deploy --config iac/fly.toml
 
-  # --- Default task ---
-
   default:
-    desc: Show available tasks
+    internal: true
     cmds:
       - task --list
