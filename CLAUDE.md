@@ -12,6 +12,9 @@ This file provides guidance for AI assistants working in this repository.
 
 ```
 makingmonsters/
+├── build/                   # All build output (git-ignored)
+│   ├── public/              # Compiled Svelte frontend (served by PocketBase)
+│   └── pocketbase           # Compiled Go binary
 ├── client/                  # Svelte frontend application
 │   ├── src/
 │   │   ├── main.js          # App entry point
@@ -67,7 +70,7 @@ makingmonsters/
 ### Infrastructure (implemented)
 | Tool | Purpose |
 |------|---------|
-| Docker | Multi-stage build — compiles Go binary, bundles Svelte `dist/` |
+| Docker | Multi-stage build — compiles Go binary, bundles Svelte `build/public/` |
 | fly.io | App hosting + persistent volume for PocketBase data |
 | OpenTofu | Manages fly.io resources declaratively alongside `fly.toml` |
 
@@ -89,8 +92,8 @@ Tasks are defined in per-directory Taskfiles (`client/`, `server/`, `iac/`) and 
 |---|---|
 | `task client:install` | Install frontend dependencies |
 | `task client:dev` | Start standalone Vite dev server with HMR (auto-runs `install`) |
-| `task client:watch` | Watch source files, rebuild, and sync to `server/pb_public/` (auto-runs `install`) |
-| `task client:build` | Production build → `client/dist/` (auto-runs `install`) |
+| `task client:watch` | Watch source files and rebuild to `build/public/` (auto-runs `install`) |
+| `task client:build` | Production build → `build/public/` (auto-runs `install`) |
 | `task client:preview` | Preview production build (auto-runs `build`) |
 
 **Server**
@@ -98,7 +101,7 @@ Tasks are defined in per-directory Taskfiles (`client/`, `server/`, `iac/`) and 
 | Task command | Description |
 |---|---|
 | `task server:init` | Download Go dependencies (`go mod tidy`) — run once after cloning |
-| `task server:build` | Compile the PocketBase binary to `server/pocketbase` (auto-runs `init`) |
+| `task server:build` | Compile the PocketBase binary to `build/pocketbase` (auto-runs `init`) |
 | `task server:dev` | Run PocketBase locally on `:8090` |
 
 **Infrastructure**
@@ -140,15 +143,15 @@ Run `task` with no arguments to list all available tasks.
 ### Frontend only
 1. `task client:dev` — installs dependencies automatically, then starts dev server with HMR
 2. Make changes — Svelte component state is preserved across HMR updates unless the `<script>` block changes
-3. `task client:build` — production build to `client/dist/`
+3. `task client:build` — production build to `build/public/`
 
 ### Full stack (frontend + PocketBase)
-- `task serve` — watches both client source files and Go files in parallel; rebuilds and syncs the frontend to `server/pb_public/` on change, restarts PocketBase on Go changes. Visit `http://localhost:8090`; admin UI at `http://localhost:8090/_/`
+- `task serve` — watches both client source files and Go files in parallel; rebuilds the frontend to `build/public/` on change, restarts PocketBase on Go changes. Visit `http://localhost:8090`; admin UI at `http://localhost:8090/_/`
 
 ### Server conventions
 - Custom routes and hooks go in `server/main.go` (or additional `.go` files in `server/`)
-- PocketBase stores its data in `pb_data/` (excluded from git via `.gitignore`)
-- PocketBase serves the built Svelte frontend from `pb_public/` — always run `task client:build` first
+- PocketBase stores its data in `server/pb_data/` (excluded from git via `.gitignore`)
+- PocketBase serves the built Svelte frontend from `build/public/` — always run `task client:build` first
 
 ## Testing
 
@@ -161,7 +164,7 @@ No test suite exists yet. When added, the plan is:
 
 - Default branch: `main`
 - Commit signing is enabled (SSH key)
-- The `.gitignore` excludes `node_modules/`, `dist/`, and `.env` files
+- The `.gitignore` excludes `node_modules/`, `build/`, and `.env` files
 - Branch naming for AI assistants: `claude/<description>-<session-id>`
 
 ## Environment Variables

@@ -7,15 +7,15 @@ tasks:
       - go mod tidy
 
   build:
-    desc: Compile the PocketBase binary to ./pocketbase
+    desc: Compile the PocketBase binary to build/pocketbase
     deps: [init]
     cmds:
-      - go build -o pocketbase .
+      - go build -o ../build/pocketbase .
 
   dev:
     desc: Run PocketBase locally (serves on :8090)
     cmds:
-      - go run . serve
+      - go run . serve --publicDir=../build/public
 
   watch:
     desc: Watch Go files and restart the server on changes
@@ -24,4 +24,4 @@ tasks:
       - '*.go'
       - go.mod
     cmds:
-      - go build -o pocketbase . && ./pocketbase serve
+      - go build -o ../build/pocketbase . && ../build/pocketbase serve --publicDir=../build/public
