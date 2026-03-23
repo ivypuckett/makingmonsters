@@ -13,9 +13,9 @@ includes:
 
 tasks:
   serve:
-    desc: Start client HMR and server file-watcher in parallel
+    desc: Watch client and server files, rebuild and restart on changes
     cmds:
-      - task -p client:dev server:watch
+      - task -p client:watch server:watch
 
   deploy:
     desc: Build frontend, then deploy the full stack to fly.io

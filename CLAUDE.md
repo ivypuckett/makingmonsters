@@ -88,7 +88,8 @@ Tasks are defined in per-directory Taskfiles (`client/`, `server/`, `iac/`) and 
 | Task command | Description |
 |---|---|
 | `task client:install` | Install frontend dependencies |
-| `task client:dev` | Start dev server with HMR (auto-runs `install`) |
+| `task client:dev` | Start standalone Vite dev server with HMR (auto-runs `install`) |
+| `task client:watch` | Watch source files, rebuild, and sync to `server/pb_public/` (auto-runs `install`) |
 | `task client:build` | Production build → `client/dist/` (auto-runs `install`) |
 | `task client:preview` | Preview production build (auto-runs `build`) |
 
@@ -142,8 +143,7 @@ Run `task` with no arguments to list all available tasks.
 3. `task client:build` — production build to `client/dist/`
 
 ### Full stack (frontend + PocketBase)
-1. `task client:build` — installs frontend dependencies then builds Svelte into `client/dist/`
-2. `task server:dev` — fetches Go dependencies if needed, then runs PocketBase on `http://localhost:8090`; admin UI at `http://localhost:8090/_/`
+- `task serve` — watches both client source files and Go files in parallel; rebuilds and syncs the frontend to `server/pb_public/` on change, restarts PocketBase on Go changes. Visit `http://localhost:8090`; admin UI at `http://localhost:8090/_/`
 
 ### Server conventions
 - Custom routes and hooks go in `server/main.go` (or additional `.go` files in `server/`)
