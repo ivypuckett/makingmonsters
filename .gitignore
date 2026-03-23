@@ -31,6 +31,18 @@ go.work.sum
 client/node_modules/
 client/dist/
 
+# PocketBase runtime
+server/pocketbase
+server/pb_data/
+server/pb_public/
+
+# OpenTofu
+iac/.terraform/
+iac/terraform.tfstate
+iac/terraform.tfstate.backup
+iac/terraform.tfvars
+iac/*.tfvars
+
 # Editor/IDE
 # .idea/
 # .vscode/
