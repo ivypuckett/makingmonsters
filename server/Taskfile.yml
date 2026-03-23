@@ -16,3 +16,12 @@ tasks:
     desc: Run PocketBase locally (serves on :8090)
     cmds:
       - go run . serve
+
+  watch:
+    desc: Watch Go files and restart the server on changes
+    watch: true
+    sources:
+      - '*.go'
+      - go.mod
+    cmds:
+      - go run . serve

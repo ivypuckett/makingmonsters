@@ -12,6 +12,12 @@ includes:
     dir: ./iac
 
 tasks:
+  serve:
+    desc: Start client HMR and server file-watcher in parallel
+    deps:
+      - client:dev
+      - server:watch
+
   deploy:
     desc: Build frontend, then deploy the full stack to fly.io
     deps: [client:build]
