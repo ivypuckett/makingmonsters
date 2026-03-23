@@ -1,0 +1,27 @@
+version: '3'
+
+tasks:
+  init:
+    desc: Download Go dependencies (run once after cloning)
+    cmds:
+      - go mod tidy
+
+  build:
+    desc: Compile the PocketBase binary to ./pocketbase
+    deps: [init]
+    cmds:
+      - go build -o pocketbase .
+
+  dev:
+    desc: Run PocketBase locally (serves on :8090)
+    cmds:
+      - go run . serve
+
+  watch:
+    desc: Watch Go files and restart the server on changes
+    watch: true
+    sources:
+      - '*.go'
+      - go.mod
+    cmds:
+      - go build -o pocketbase . && ./pocketbase serve

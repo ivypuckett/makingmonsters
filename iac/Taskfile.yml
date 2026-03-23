@@ -1,0 +1,17 @@
+version: '3'
+
+tasks:
+  init:
+    desc: Initialize OpenTofu providers (run once)
+    cmds:
+      - tofu init
+
+  plan:
+    desc: Preview infrastructure changes
+    cmds:
+      - tofu plan
+
+  apply:
+    desc: Apply infrastructure changes
+    cmds:
+      - tofu apply

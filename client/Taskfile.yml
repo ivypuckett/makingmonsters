@@ -1,0 +1,38 @@
+version: '3'
+
+tasks:
+  install:
+    desc: Install frontend dependencies
+    cmds:
+      - npm install
+
+  dev:
+    desc: Start dev server with hot module replacement
+    deps: [install]
+    cmds:
+      - npm run dev
+
+  watch:
+    desc: Watch source files, rebuild, and sync output to server/pb_public/
+    deps: [install]
+    watch: true
+    sources:
+      - src/**/*
+      - index.html
+      - vite.config.js
+    cmds:
+      - npm run build
+      - rm -rf ../server/pb_public
+      - cp -r dist/. ../server/pb_public/
+
+  build:
+    desc: Build for production (outputs to dist/)
+    deps: [install]
+    cmds:
+      - npm run build
+
+  preview:
+    desc: Preview the production build locally
+    deps: [build]
+    cmds:
+      - npm run preview
