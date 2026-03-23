@@ -24,4 +24,4 @@ tasks:
       - '*.go'
       - go.mod
     cmds:
-      - go run . serve
+      - go build -o pocketbase . && ./pocketbase serve
