@@ -43,12 +43,12 @@ makingmonsters/
 │   └── Taskfile.yml         # Infrastructure tasks (included by root under iac: namespace)
 ├── features/                # Cucumber Gherkin feature files
 │   └── hello_world.feature  # Server health check scenario
-├── tests/                   # Step definitions and test support
-│   └── step_definitions/
-│       └── hello_world.js   # Steps for hello_world.feature
-├── package.json             # Root-level test dependencies (Cucumber-JS, Puppeteer)
-├── package-lock.json        # Dependency lock file
-├── cucumber.json            # Cucumber configuration
+├── tests/                   # All test tooling, self-contained
+│   ├── step_definitions/
+│   │   └── hello_world.js   # Steps for hello_world.feature
+│   ├── package.json         # Test dependencies (Cucumber-JS, Puppeteer)
+│   ├── package-lock.json    # Dependency lock file
+│   └── cucumber.json        # Cucumber configuration
 ├── Taskfile.yml             # Root task runner — includes sub-Taskfiles (see Commands section)
 ├── README.md
 ├── LICENSE                  # MIT

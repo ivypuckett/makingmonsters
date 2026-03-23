@@ -25,6 +25,7 @@ tasks:
 
   test:
     desc: Run Cucumber integration tests (requires server on :8090)
+    dir: tests
     cmds:
       - npm test
 
