@@ -8,9 +8,8 @@ tasks:
 
   build:
     desc: Compile the PocketBase binary to build/pocketbase
-    deps: [init]
     cmds:
-      - go build -o ../build/pocketbase .
+      - go build -mod=vendor -o ../build/pocketbase .
 
   dev:
     desc: Run PocketBase locally (serves on :8090)
@@ -24,4 +23,4 @@ tasks:
       - '*.go'
       - go.mod
     cmds:
-      - go build -o ../build/pocketbase . && ../build/pocketbase serve --publicDir=../build/public
+      - go build -mod=vendor -o ../build/pocketbase . && ../build/pocketbase serve --publicDir=../build/public

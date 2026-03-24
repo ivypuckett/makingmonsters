@@ -48,13 +48,12 @@ if [ "$SKIP_BUILD" = false ]; then
   echo "==> Building PocketBase server..."
   mkdir -p "$BUILD_DIR"
   cd "$SERVER_DIR"
-  go build -o "$BINARY" .
+  go build -mod=vendor -o "$BINARY" .
 fi
 
 if [ ! -x "$BINARY" ]; then
   echo "ERROR: PocketBase binary not found at $BINARY"
-  echo "  Run 'cd server && go build -o ../build/pocketbase .' manually,"
-  echo "  or fix network access so Go modules can be downloaded."
+  echo "  Run 'cd server && go build -mod=vendor -o ../build/pocketbase .' manually."
   exit 1
 fi
 

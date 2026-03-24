@@ -194,7 +194,7 @@ Use `--skip-build` if the Go binary is already built:
 
 ### Environment notes for AI agents
 - **Puppeteer Chrome download** is skipped via `PUPPETEER_SKIP_DOWNLOAD=true` — current tests use `fetch` only, not browser automation
-- **Go module downloads** require network access to `storage.googleapis.com` — if blocked, the server cannot be built; use `--skip-build` with a pre-built binary
+- **Go build uses the vendor directory** (`-mod=vendor`) — no network access required to build the server binary
 - A **SessionStart hook** in `.claude/settings.json` automatically installs test deps and attempts to build the server when a Claude Code session starts
 
 ### Writing tests
