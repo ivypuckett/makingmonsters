@@ -46,9 +46,12 @@ makingmonsters/
 ├── tests/                   # All test tooling, self-contained
 │   ├── step_definitions/
 │   │   └── hello_world.js   # Steps for hello_world.feature
+│   ├── run-integration-tests.sh  # All-in-one script: build → start → test → stop
 │   ├── package.json         # Test dependencies (Cucumber-JS, Puppeteer)
 │   ├── package-lock.json    # Dependency lock file
 │   └── cucumber.json        # Cucumber configuration
+├── .claude/
+│   └── settings.json        # Claude Code hooks and permissions
 ├── Taskfile.yml             # Root task runner — includes sub-Taskfiles (see Commands section)
 ├── README.md
 ├── LICENSE                  # MIT
@@ -168,11 +171,31 @@ Run `task` with no arguments to list all available tasks.
 
 ## Testing
 
-Run integration tests with `task test` (requires the server running on `:8090` — start it with `task server:dev`).
+### Running integration tests
+
+The easiest way to run integration tests is the all-in-one script:
+
+```bash
+./tests/run-integration-tests.sh
+```
+
+This script handles the full lifecycle: install test deps → build Go server → start server on `:8090` → run Cucumber tests → stop server. If a server is already running on `:8090`, it skips starting a new one.
+
+Use `--skip-build` if the Go binary is already built:
+
+```bash
+./tests/run-integration-tests.sh --skip-build
+```
 
 | Task command | Description |
 |---|---|
-| `task test` | Run all Cucumber integration tests |
+| `task test` | Full pipeline: build, start server, test, stop server |
+| `task test:quick` | Run Cucumber tests only (requires server already on `:8090`) |
+
+### Environment notes for AI agents
+- **Puppeteer Chrome download** is skipped via `PUPPETEER_SKIP_DOWNLOAD=true` — current tests use `fetch` only, not browser automation
+- **Go module downloads** require network access to `storage.googleapis.com` — if blocked, the server cannot be built; use `--skip-build` with a pre-built binary
+- A **SessionStart hook** in `.claude/settings.json` automatically installs test deps and attempts to build the server when a Claude Code session starts
 
 ### Writing tests
 - Feature files (Gherkin scenarios) go in `features/*.feature`

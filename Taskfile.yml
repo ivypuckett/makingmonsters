@@ -24,7 +24,12 @@ tasks:
       - flyctl deploy --config iac/fly.toml
 
   test:
-    desc: Run Cucumber integration tests (requires server on :8090)
+    desc: Build server, start it, run Cucumber tests, stop server
+    cmds:
+      - ./tests/run-integration-tests.sh
+
+  test:quick:
+    desc: Run Cucumber tests only (requires server already on :8090)
     dir: tests
     cmds:
       - npm test
