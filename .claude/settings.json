@@ -1,0 +1,25 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd /home/user/makingmonsters/tests && PUPPETEER_SKIP_DOWNLOAD=true npm install --silent 2>/dev/null; cd /home/user/makingmonsters/server && go build -o ../build/pocketbase . 2>/dev/null; echo 'Session setup complete'"
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(npm install:tests/*)",
+      "Bash(npm test:tests/*)",
+      "Bash(npx cucumber*)",
+      "Bash(./tests/run-integration-tests.sh*)",
+      "Bash(go build*:server/*)",
+      "Bash(go run*:server/*)"
+    ]
+  }
+}
