@@ -27,8 +27,8 @@ go.work.sum
 # env file
 .env
 
-# Frontend
-client/node_modules/
+# Node modules
+node_modules/
 
 # Build output
 build/
