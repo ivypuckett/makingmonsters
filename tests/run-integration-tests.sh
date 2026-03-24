@@ -64,8 +64,7 @@ if curl -sf "http://localhost:$PORT/api/health" >/dev/null 2>&1; then
   EXTERNAL_SERVER=true
 else
   echo "==> Starting PocketBase on :$PORT..."
-  mkdir -p "$BUILD_DIR/public"  # ensure publicDir exists
-  "$BINARY" serve --http="0.0.0.0:$PORT" --publicDir="$BUILD_DIR/public" &
+  "$BINARY" serve --http="0.0.0.0:$PORT" &
   echo $! > "$PID_FILE"
 
   # Wait for the server to be ready (up to 15 seconds)
