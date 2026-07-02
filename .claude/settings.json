@@ -16,8 +16,7 @@
     "allow": [
       "Bash(npm install:client/*)",
       "Bash(npm run build:client/*)",
-      "Bash(npm test:client/*)",
-      "Bash(./scripts/get-pocketbase.sh*)"
+      "Bash(npm test:client/*)"
     ]
   }
 }

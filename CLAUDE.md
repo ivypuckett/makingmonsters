@@ -12,10 +12,8 @@ This file provides guidance for AI assistants working in this repository.
 
 ```
 makingmonsters/
-├── build/                   # All build output + local runtime (git-ignored); mirrors the Docker /app layout
-│   ├── pb_public/           # Compiled Svelte frontend (served by PocketBase as ./pb_public)
-│   ├── pb_data/             # PocketBase runtime data when run locally (created on first run)
-│   └── pocketbase           # Downloaded stock PocketBase binary (see scripts/get-pocketbase.sh)
+├── build/                   # Frontend build output (git-ignored)
+│   └── pb_public/           # Compiled Svelte frontend (served by PocketBase as ./pb_public in the image)
 ├── client/                  # Svelte frontend application
 │   ├── src/
 │   │   ├── main.js          # App entry point
@@ -29,14 +27,12 @@ makingmonsters/
 │   ├── vite.config.js       # Vite + Vitest config
 │   ├── vitest-setup.js      # Test setup (jest-dom matchers)
 │   └── svelte.config.js
-├── scripts/
-│   └── get-pocketbase.sh    # Download the pinned PocketBase release binary into build/
 ├── iac/                     # Infrastructure as code
 │   ├── Dockerfile           # Multi-stage build: builds Svelte frontend + bundles stock PocketBase
 │   └── fly.toml             # fly.io app configuration (app name, region, volume mount)
 ├── .claude/
 │   └── settings.json        # Claude Code hooks and permissions
-├── Makefile                 # Command runner — frontend, serve, deploy (see Commands section)
+├── Makefile                 # Command runner — frontend build/test + deploy (see Commands section)
 ├── README.md
 ├── LICENSE                  # MIT
 └── CLAUDE.md                # This file
@@ -102,10 +98,10 @@ The root `Makefile` is the single command runner: frontend targets run `npm` in 
 
 | Make target | Description |
 |---|---|
-| `make pocketbase` | Download the pinned PocketBase binary into `build/` if absent (no-op if present) |
-| `make serve` | Build the frontend, download PocketBase if needed, and run it locally on `:8090` (serves `build/pb_public`) |
 | `make test` | Run frontend unit tests |
 | `make deploy` | Deploy to fly.io — `flyctl deploy --config iac/fly.toml` (the Docker image builds the frontend and bundles PocketBase) |
+
+To run the full stack (frontend + PocketBase) locally, build the Docker image from `iac/Dockerfile` and run it — there is no `make serve` target.
 
 Run `make` (or `make help`) with no target to list all available targets.
 
@@ -142,11 +138,11 @@ Run `make` (or `make help`) with no target to list all available targets.
 Since the backend is stock PocketBase, there is no backend code to iterate on; run PocketBase separately if you need its API during frontend work.
 
 ### Integrated (frontend served by PocketBase)
-- `make serve` — builds the frontend to `build/pb_public/`, downloads the pinned PocketBase binary into `build/` if absent, then runs it from `build/` so it serves `./pb_public` and stores `./pb_data` beside the binary (mirroring the Docker `/app` layout). Visit `http://localhost:8090`; admin UI at `http://localhost:8090/_/`
+- The full stack runs via the Docker image (`iac/Dockerfile`), which builds the frontend and fetches the pinned PocketBase binary. Build and run it locally to serve the app on `:8090` (admin UI at `/_/`), or `make deploy` to ship it to fly.io. There is no standalone local PocketBase download.
 
 ### Backend notes
-- The backend is the official PocketBase release binary (pinned to the version in `scripts/get-pocketbase.sh` and `iac/Dockerfile`). It serves `pb_public/` and stores data in `pb_data/`, both resolved next to the binary.
-- Locally, both live under `build/` (git-ignored). In the Docker image they live under `/app`, with `pb_data` on the fly.io volume.
+- The backend is the official PocketBase release binary (pinned via `PB_VERSION` in `iac/Dockerfile`). It serves `pb_public/` and stores data in `pb_data/`, both resolved next to the binary.
+- In the Docker image they live under `/app`, with `pb_data` on the fly.io volume.
 
 ## Testing
 
@@ -162,7 +158,7 @@ cd client && npm run test:watch   # watch mode
 - A **SessionStart hook** in `.claude/settings.json` installs frontend dependencies when a Claude Code session starts.
 
 ### Environment notes for AI agents
-- Downloading the PocketBase release from GitHub may be blocked by network egress policy in some sandboxes. Package registries (npm) are generally reachable, so frontend install/build/test work; the PocketBase binary download and the Docker build succeed wherever GitHub releases are reachable (e.g. the fly.io remote builder).
+- Package registries (npm) are generally reachable, so frontend install/build/test work in most sandboxes. The Docker build fetches the PocketBase release from GitHub, which may be blocked by network egress policy in some sandboxes; it succeeds wherever GitHub releases are reachable (e.g. the fly.io remote builder).
 
 ### Planned
 - Browser-based E2E tests

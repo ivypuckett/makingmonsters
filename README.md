@@ -24,8 +24,7 @@ Project Status: Experiment
 
 ```
 /client/*: all frontend code (Svelte app + Vitest unit tests)
-/scripts/*: helper scripts (e.g. download the PocketBase binary)
-/iac/*: fly.toml + Dockerfile
+/iac/*: fly.toml + Dockerfile (builds the frontend + bundles PocketBase)
 /Makefile: cli command documentation
 /CLAUDE.md: agent instructions file
 /LICENSE: an MIT license to Ivy Puckett
