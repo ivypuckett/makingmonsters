@@ -30,18 +30,8 @@ go.work.sum
 # Node modules
 node_modules/
 
-# Build output
+# Build output + local runtime data (build/pb_public, build/pb_data, build/pocketbase)
 build/
-
-# PocketBase runtime data
-server/pb_data/
-
-# OpenTofu
-iac/.terraform/
-iac/terraform.tfstate
-iac/terraform.tfstate.backup
-iac/terraform.tfvars
-iac/*.tfvars
 
 # Editor/IDE
 # .idea/
