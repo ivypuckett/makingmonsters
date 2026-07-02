@@ -13,7 +13,7 @@ tasks:
       - npm run dev
 
   watch:
-    desc: Watch source files and rebuild to build/public/
+    desc: Watch source files and rebuild to build/pb_public/
     deps: [install]
     watch: true
     sources:
@@ -24,7 +24,7 @@ tasks:
       - npm run build
 
   build:
-    desc: Build for production (outputs to build/public/)
+    desc: Build for production (outputs to build/pb_public/)
     deps: [install]
     cmds:
       - npm run build

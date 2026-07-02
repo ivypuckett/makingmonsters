@@ -12,8 +12,9 @@ This file provides guidance for AI assistants working in this repository.
 
 ```
 makingmonsters/
-├── build/                   # All build output (git-ignored)
-│   ├── public/              # Compiled Svelte frontend (served by PocketBase)
+├── build/                   # All build output + local runtime (git-ignored); mirrors the Docker /app layout
+│   ├── pb_public/           # Compiled Svelte frontend (served by PocketBase as ./pb_public)
+│   ├── pb_data/             # PocketBase runtime data when run locally (created on first run)
 │   └── pocketbase           # Compiled Go binary
 ├── client/                  # Svelte frontend application
 │   ├── src/
@@ -81,7 +82,7 @@ makingmonsters/
 ### Infrastructure (implemented)
 | Tool | Purpose |
 |------|---------|
-| Docker | Multi-stage build — compiles Go binary, bundles Svelte `build/public/` |
+| Docker | Multi-stage build — compiles Go binary, bundles Svelte `build/pb_public/` |
 | fly.io | App hosting + persistent volume for PocketBase data |
 | OpenTofu | Manages fly.io resources declaratively alongside `fly.toml` |
 
@@ -108,8 +109,8 @@ Tasks are defined in per-directory Taskfiles (`client/`, `server/`, `iac/`) and 
 |---|---|
 | `task client:install` | Install frontend dependencies |
 | `task client:dev` | Start standalone Vite dev server with HMR (auto-runs `install`) |
-| `task client:watch` | Watch source files and rebuild to `build/public/` (auto-runs `install`) |
-| `task client:build` | Production build → `build/public/` (auto-runs `install`) |
+| `task client:watch` | Watch source files and rebuild to `build/pb_public/` (auto-runs `install`) |
+| `task client:build` | Production build → `build/pb_public/` (auto-runs `install`) |
 | `task client:preview` | Preview production build (auto-runs `build`) |
 
 **Server**
@@ -159,15 +160,15 @@ Run `task` with no arguments to list all available tasks.
 ### Frontend only
 1. `task client:dev` — installs dependencies automatically, then starts dev server with HMR
 2. Make changes — Svelte component state is preserved across HMR updates unless the `<script>` block changes
-3. `task client:build` — production build to `build/public/`
+3. `task client:build` — production build to `build/pb_public/`
 
 ### Full stack (frontend + PocketBase)
-- `task serve` — watches both client source files and Go files in parallel; rebuilds the frontend to `build/public/` on change, restarts PocketBase on Go changes. Visit `http://localhost:8090`; admin UI at `http://localhost:8090/_/`
+- `task serve` — watches both client source files and Go files in parallel; rebuilds the frontend to `build/pb_public/` on change, restarts PocketBase on Go changes. The server runs from `build/`, so it serves `./pb_public` directly. Visit `http://localhost:8090`; admin UI at `http://localhost:8090/_/`
 
 ### Server conventions
 - Custom routes and hooks go in `server/main.go` (or additional `.go` files in `server/`)
-- PocketBase stores its data in `server/pb_data/` (excluded from git via `.gitignore`)
-- PocketBase serves the built Svelte frontend from `build/public/` — always run `task client:build` first
+- PocketBase stores its data in `build/pb_data/` when run locally via the tasks (the server runs from `build/`); the whole `build/` tree is excluded from git via `.gitignore`
+- PocketBase serves the built Svelte frontend from `./pb_public` relative to its working directory — locally that resolves to `build/pb_public/`, and in the Docker image to `/app/pb_public/`. Always run `task client:build` first
 
 ## Testing
 

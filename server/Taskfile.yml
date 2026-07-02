@@ -13,8 +13,10 @@ tasks:
 
   dev:
     desc: Run PocketBase locally (serves on :8090)
+    deps: [build]
     cmds:
-      - go run . serve
+      # Run from build/ so ./pb_public and ./pb_data resolve next to the binary (mirrors the Docker /app layout)
+      - cd ../build && ./pocketbase serve
 
   watch:
     desc: Watch Go files and restart the server on changes
@@ -23,4 +25,5 @@ tasks:
       - '*.go'
       - go.mod
     cmds:
-      - go build -mod=vendor -o ../build/pocketbase . && ../build/pocketbase serve
+      # Run from build/ so ./pb_public and ./pb_data resolve next to the binary (mirrors the Docker /app layout)
+      - go build -mod=vendor -o ../build/pocketbase . && cd ../build && ./pocketbase serve

@@ -64,7 +64,8 @@ if curl -sf "http://localhost:$PORT/api/health" >/dev/null 2>&1; then
   EXTERNAL_SERVER=true
 else
   echo "==> Starting PocketBase on :$PORT..."
-  "$BINARY" serve --http="0.0.0.0:$PORT" &
+  # Run from build/ so ./pb_public and ./pb_data resolve next to the binary (mirrors the Docker /app layout)
+  ( cd "$BUILD_DIR" && exec "$BINARY" serve --http="0.0.0.0:$PORT" ) &
   echo $! > "$PID_FILE"
 
   # Wait for the server to be ready (up to 15 seconds)
