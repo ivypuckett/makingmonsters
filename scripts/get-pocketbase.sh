@@ -40,7 +40,15 @@ mkdir -p "$BUILD_DIR"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 
-curl -fsSL "$URL" -o "$TMP/$ASSET"
+if ! curl -fsSL "$URL" -o "$TMP/$ASSET"; then
+  echo "ERROR: failed to download $URL" >&2
+  echo "       If this is a sandboxed CI/agent environment, outbound access to" >&2
+  echo "       github.com may be blocked by egress policy (often a 403). The" >&2
+  echo "       download succeeds wherever GitHub releases are reachable, such as" >&2
+  echo "       the fly.io remote builder. To supply the binary manually, place a" >&2
+  echo "       'pocketbase' executable at $BINARY." >&2
+  exit 1
+fi
 unzip -q -o "$TMP/$ASSET" -d "$TMP"
 mv "$TMP/pocketbase" "$BINARY"
 chmod +x "$BINARY"

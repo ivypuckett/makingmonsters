@@ -25,11 +25,10 @@ makingmonsters/
 │   │   └── assets/          # Images and SVGs
 │   ├── public/              # Static public assets (favicon, icons)
 │   ├── index.html           # HTML entry point
-│   ├── package.json
+│   ├── package.json         # Frontend npm scripts (dev, build, watch, preview, test)
 │   ├── vite.config.js       # Vite + Vitest config
 │   ├── vitest-setup.js      # Test setup (jest-dom matchers)
-│   ├── svelte.config.js
-│   └── Taskfile.yml         # Frontend tasks (included by root under client: namespace)
+│   └── svelte.config.js
 ├── scripts/
 │   └── get-pocketbase.sh    # Download the pinned PocketBase release binary into build/
 ├── iac/                     # Infrastructure as code
@@ -37,7 +36,7 @@ makingmonsters/
 │   └── fly.toml             # fly.io app configuration (app name, region, volume mount)
 ├── .claude/
 │   └── settings.json        # Claude Code hooks and permissions
-├── Taskfile.yml             # Root task runner — includes client/Taskfile.yml (see Commands section)
+├── Makefile                 # Command runner — frontend, serve, deploy (see Commands section)
 ├── README.md
 ├── LICENSE                  # MIT
 └── CLAUDE.md                # This file
@@ -84,30 +83,31 @@ There is no custom Go code. The backend is the official PocketBase release, whic
 
 ## Commands
 
-Use [Taskfile](https://taskfile.dev/) from the repo root, or npm scripts from `client/`.
+Use [Make](https://www.gnu.org/software/make/) from the repo root, or npm scripts from `client/`.
 
-Frontend tasks live in `client/Taskfile.yml` and are included into the root Taskfile under the `client:` namespace. Dependent tasks (e.g. `install` before `build`) run automatically — you only need to invoke the top-level task.
+The root `Makefile` is the single command runner: frontend targets run `npm` in `client/`, and `serve`/`deploy` wire in PocketBase and fly.io. Prerequisite targets (e.g. `install` before `build`) run automatically — you only need to invoke the top-level target.
 
 **Frontend**
 
-| Task command | npm equivalent (in `client/`) | Description |
+| Make target | npm equivalent (in `client/`) | Description |
 |---|---|---|
-| `task client:install` | `npm install` | Install frontend dependencies |
-| `task client:dev` | `npm run dev` | Start standalone Vite dev server with HMR |
-| `task client:watch` | — | Watch source files and rebuild to `build/pb_public/` |
-| `task client:build` | `npm run build` | Production build → `build/pb_public/` |
-| `task client:preview` | `npm run preview` | Preview production build |
-| `task client:test` | `npm test` | Run frontend unit tests (Vitest) |
+| `make install` | `npm install` | Install frontend dependencies |
+| `make dev` | `npm run dev` | Start standalone Vite dev server with HMR |
+| `make watch` | `npm run watch` (`vite build --watch`) | Watch source files and rebuild to `build/pb_public/` |
+| `make build` | `npm run build` | Production build → `build/pb_public/` |
+| `make preview` | `npm run preview` | Preview production build |
+| `make test` | `npm test` | Run frontend unit tests (Vitest) |
 
 **Root**
 
-| Task command | Description |
+| Make target | Description |
 |---|---|
-| `task serve` | Build the frontend, download PocketBase if needed, and run it locally on `:8090` (serves `build/pb_public`) |
-| `task test` | Run frontend unit tests |
-| `task deploy` | Deploy to fly.io — `flyctl deploy --config iac/fly.toml` (the Docker image builds the frontend and bundles PocketBase) |
+| `make pocketbase` | Download the pinned PocketBase binary into `build/` if absent (no-op if present) |
+| `make serve` | Build the frontend, download PocketBase if needed, and run it locally on `:8090` (serves `build/pb_public`) |
+| `make test` | Run frontend unit tests |
+| `make deploy` | Deploy to fly.io — `flyctl deploy --config iac/fly.toml` (the Docker image builds the frontend and bundles PocketBase) |
 
-Run `task` with no arguments to list all available tasks.
+Run `make` (or `make help`) with no target to list all available targets.
 
 ## Code Conventions
 
@@ -135,14 +135,14 @@ Run `task` with no arguments to list all available tasks.
 ## Development Workflow
 
 ### Frontend iteration (most common)
-1. `task client:dev` — installs dependencies automatically, then starts the Vite dev server with HMR
+1. `make dev` — installs dependencies automatically, then starts the Vite dev server with HMR
 2. Make changes — Svelte component state is preserved across HMR updates unless the `<script>` block changes
-3. `task client:test` — run unit tests
+3. `make test` — run unit tests
 
 Since the backend is stock PocketBase, there is no backend code to iterate on; run PocketBase separately if you need its API during frontend work.
 
 ### Integrated (frontend served by PocketBase)
-- `task serve` — builds the frontend to `build/pb_public/`, downloads the pinned PocketBase binary into `build/` if absent, then runs it from `build/` so it serves `./pb_public` and stores `./pb_data` beside the binary (mirroring the Docker `/app` layout). Visit `http://localhost:8090`; admin UI at `http://localhost:8090/_/`
+- `make serve` — builds the frontend to `build/pb_public/`, downloads the pinned PocketBase binary into `build/` if absent, then runs it from `build/` so it serves `./pb_public` and stores `./pb_data` beside the binary (mirroring the Docker `/app` layout). Visit `http://localhost:8090`; admin UI at `http://localhost:8090/_/`
 
 ### Backend notes
 - The backend is the official PocketBase release binary (pinned to the version in `scripts/get-pocketbase.sh` and `iac/Dockerfile`). It serves `pb_public/` and stores data in `pb_data/`, both resolved next to the binary.
@@ -153,7 +153,7 @@ Since the backend is stock PocketBase, there is no backend code to iterate on; r
 Frontend unit tests run with **Vitest** (jsdom environment + `@testing-library/svelte`).
 
 ```bash
-task test          # or: cd client && npm test
+make test          # or: cd client && npm test
 cd client && npm run test:watch   # watch mode
 ```
 

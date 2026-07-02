@@ -5,7 +5,7 @@ Project Status: Experiment
 ## Stack
 
 ### In use
-1. [Taskfile](https://taskfile.dev/): Document all CLI commands here.
+1. [Make](https://www.gnu.org/software/make/): Document all CLI commands here (`make` to list targets).
 2. [Svelte](https://svelte.dev/): Front End Framework
 3. [Vite](https://vite.dev/): Build tool + dev server
 4. [DaisyUI](https://daisyui.com/): Easy way to get professional layouts quickly.
@@ -26,7 +26,7 @@ Project Status: Experiment
 /client/*: all frontend code (Svelte app + Vitest unit tests)
 /scripts/*: helper scripts (e.g. download the PocketBase binary)
 /iac/*: fly.toml + Dockerfile
-/Taskfile.yml: cli command documentation
+/Makefile: cli command documentation
 /CLAUDE.md: agent instructions file
 /LICENSE: an MIT license to Ivy Puckett
 /README.md: human-facing documentation of what this project is, how to develop against it, etc.
