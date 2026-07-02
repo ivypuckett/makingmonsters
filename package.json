@@ -1,0 +1,14 @@
+{
+  "name": "makingmonsters",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Svelte frontend served by stock PocketBase, deployed to fly.io. Frontend scripts delegate to ./client; deploy ships the Docker image.",
+  "scripts": {
+    "dev": "npm --prefix client run dev",
+    "build": "npm --prefix client run build",
+    "watch": "npm --prefix client run watch",
+    "preview": "npm --prefix client run preview",
+    "test": "npm --prefix client test",
+    "deploy": "flyctl deploy --config iac/fly.toml"
+  }
+}

@@ -5,7 +5,7 @@ Project Status: Experiment
 ## Stack
 
 ### In use
-1. [Taskfile](https://taskfile.dev/): Document all CLI commands here.
+1. [npm scripts](https://docs.npmjs.com/cli/using-npm/scripts): CLI commands live in `package.json` (`npm run` to list them).
 2. [Svelte](https://svelte.dev/): Front End Framework
 3. [Vite](https://vite.dev/): Build tool + dev server
 4. [DaisyUI](https://daisyui.com/): Easy way to get professional layouts quickly.
@@ -24,9 +24,8 @@ Project Status: Experiment
 
 ```
 /client/*: all frontend code (Svelte app + Vitest unit tests)
-/scripts/*: helper scripts (e.g. download the PocketBase binary)
-/iac/*: fly.toml + Dockerfile
-/Taskfile.yml: cli command documentation
+/iac/*: fly.toml + Dockerfile (builds the frontend + bundles PocketBase)
+/package.json: root npm scripts (delegate to client/ + deploy)
 /CLAUDE.md: agent instructions file
 /LICENSE: an MIT license to Ivy Puckett
 /README.md: human-facing documentation of what this project is, how to develop against it, etc.
