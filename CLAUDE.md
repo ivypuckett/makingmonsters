@@ -32,7 +32,7 @@ makingmonsters/
 │   └── fly.toml             # fly.io app configuration (app name, region, volume mount)
 ├── .claude/
 │   └── settings.json        # Claude Code hooks and permissions
-├── Makefile                 # Command runner — frontend build/test + deploy (see Commands section)
+├── package.json             # Root npm scripts — delegate to client/ + deploy (see Commands section)
 ├── README.md
 ├── LICENSE                  # MIT
 └── CLAUDE.md                # This file
@@ -79,31 +79,29 @@ There is no custom Go code. The backend is the official PocketBase release, whic
 
 ## Commands
 
-Use [Make](https://www.gnu.org/software/make/) from the repo root, or npm scripts from `client/`.
+Run npm scripts from the repo root (they delegate into `client/`), or run them directly from `client/`.
 
-The root `Makefile` is the single command runner: frontend targets run `npm` in `client/`, and `serve`/`deploy` wire in PocketBase and fly.io. Prerequisite targets (e.g. `install` before `build`) run automatically — you only need to invoke the top-level target.
+The root `package.json` has no dependencies of its own — its scripts just invoke `npm --prefix client …`, plus a `deploy` script for fly.io. Install once with `cd client && npm install` (the SessionStart hook does this automatically for Claude Code sessions).
 
-**Frontend**
+**Frontend** (run from the repo root; each delegates to the matching script in `client/`)
 
-| Make target | npm equivalent (in `client/`) | Description |
+| Root command | Runs in `client/` | Description |
 |---|---|---|
-| `make install` | `npm install` | Install frontend dependencies |
-| `make dev` | `npm run dev` | Start standalone Vite dev server with HMR |
-| `make watch` | `npm run watch` (`vite build --watch`) | Watch source files and rebuild to `build/pb_public/` |
-| `make build` | `npm run build` | Production build → `build/pb_public/` |
-| `make preview` | `npm run preview` | Preview production build |
-| `make test` | `npm test` | Run frontend unit tests (Vitest) |
+| `npm run dev` | `npm run dev` | Start standalone Vite dev server with HMR |
+| `npm run watch` | `npm run watch` (`vite build --watch`) | Watch source files and rebuild to `build/pb_public/` |
+| `npm run build` | `npm run build` | Production build → `build/pb_public/` |
+| `npm run preview` | `npm run preview` | Preview production build |
+| `npm test` | `npm test` | Run frontend unit tests (Vitest) |
 
-**Root**
+**Deploy**
 
-| Make target | Description |
+| Root command | Description |
 |---|---|
-| `make test` | Run frontend unit tests |
-| `make deploy` | Deploy to fly.io — `flyctl deploy --config iac/fly.toml` (the Docker image builds the frontend and bundles PocketBase) |
+| `npm run deploy` | Deploy to fly.io — `flyctl deploy --config iac/fly.toml` (the Docker image builds the frontend and bundles PocketBase) |
 
-To run the full stack (frontend + PocketBase) locally, build the Docker image from `iac/Dockerfile` and run it — there is no `make serve` target.
+To run the full stack (frontend + PocketBase) locally, build the Docker image from `iac/Dockerfile` and run it.
 
-Run `make` (or `make help`) with no target to list all available targets.
+Run `npm run` with no script name to list all available scripts.
 
 ## Code Conventions
 
@@ -131,14 +129,14 @@ Run `make` (or `make help`) with no target to list all available targets.
 ## Development Workflow
 
 ### Frontend iteration (most common)
-1. `make dev` — installs dependencies automatically, then starts the Vite dev server with HMR
+1. `npm run dev` (from the root or `client/`) — starts the Vite dev server with HMR
 2. Make changes — Svelte component state is preserved across HMR updates unless the `<script>` block changes
-3. `make test` — run unit tests
+3. `npm test` — run unit tests
 
 Since the backend is stock PocketBase, there is no backend code to iterate on; run PocketBase separately if you need its API during frontend work.
 
 ### Integrated (frontend served by PocketBase)
-- The full stack runs via the Docker image (`iac/Dockerfile`), which builds the frontend and fetches the pinned PocketBase binary. Build and run it locally to serve the app on `:8090` (admin UI at `/_/`), or `make deploy` to ship it to fly.io. There is no standalone local PocketBase download.
+- The full stack runs via the Docker image (`iac/Dockerfile`), which builds the frontend and fetches the pinned PocketBase binary. Build and run it locally to serve the app on `:8090` (admin UI at `/_/`), or `npm run deploy` to ship it to fly.io. There is no standalone local PocketBase download.
 
 ### Backend notes
 - The backend is the official PocketBase release binary (pinned via `PB_VERSION` in `iac/Dockerfile`). It serves `pb_public/` and stores data in `pb_data/`, both resolved next to the binary.
@@ -149,7 +147,7 @@ Since the backend is stock PocketBase, there is no backend code to iterate on; r
 Frontend unit tests run with **Vitest** (jsdom environment + `@testing-library/svelte`).
 
 ```bash
-make test          # or: cd client && npm test
+npm test           # from the root or client/
 cd client && npm run test:watch   # watch mode
 ```
 
