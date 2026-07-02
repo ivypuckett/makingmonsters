@@ -4,35 +4,25 @@ includes:
   client:
     taskfile: ./client/Taskfile.yml
     dir: ./client
-  server:
-    taskfile: ./server/Taskfile.yml
-    dir: ./server
-  iac:
-    taskfile: ./iac/Taskfile.yml
-    dir: ./iac
 
 tasks:
   serve:
-    desc: Watch client and server files, rebuild and restart on changes
-    cmds:
-      - task -p client:watch server:watch
-
-  deploy:
-    desc: Build frontend, then deploy the full stack to fly.io
+    desc: Build the frontend and run stock PocketBase locally on :8090 (serves build/pb_public)
     deps: [client:build]
     cmds:
-      - flyctl deploy --config iac/fly.toml
+      - ./scripts/get-pocketbase.sh
+      # Run from build/ so ./pb_public and ./pb_data resolve next to the binary (mirrors the Docker /app layout)
+      - cd build && ./pocketbase serve
 
   test:
-    desc: Build server, start it, run Cucumber tests, stop server
+    desc: Run frontend unit tests
     cmds:
-      - ./tests/run-integration-tests.sh
+      - task client:test
 
-  test:quick:
-    desc: Run Cucumber tests only (requires server already on :8090)
-    dir: tests
+  deploy:
+    desc: Deploy the full stack to fly.io (the Docker image builds the frontend and bundles PocketBase)
     cmds:
-      - npm test
+      - flyctl deploy --config iac/fly.toml
 
   default:
     internal: true

@@ -29,6 +29,12 @@ tasks:
     cmds:
       - npm run build
 
+  test:
+    desc: Run frontend unit tests (Vitest)
+    deps: [install]
+    cmds:
+      - npm test
+
   preview:
     desc: Preview the production build locally
     deps: [build]
