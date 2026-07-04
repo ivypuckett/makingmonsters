@@ -27,6 +27,9 @@ WORKDIR /app
 COPY --from=pocketbase /pb/pocketbase ./pocketbase
 # PocketBase serves ./pb_public and stores ./pb_data next to the binary
 COPY --from=frontend /app/build/pb_public ./pb_public/
+# Schema migrations + JS hooks (still the stock binary; no Go build required)
+COPY pb_migrations ./pb_migrations/
+COPY pb_hooks ./pb_hooks/
 
 EXPOSE 8090
 
