@@ -27,8 +27,12 @@ makingmonsters/
 │   ├── vite.config.js       # Vite + Vitest config
 │   ├── vitest-setup.js      # Test setup (jest-dom matchers)
 │   └── svelte.config.js
+├── pb_migrations/           # PocketBase JS schema migrations (auto-applied on serve)
+├── pb_hooks/                # PocketBase JS hooks (event-sourcing projection reducer)
+│   ├── character_projection.pb.js
+│   └── lib/projection.js    # fold logic, required by the hook
 ├── iac/                     # Infrastructure as code
-│   ├── Dockerfile           # Multi-stage build: builds Svelte frontend + bundles stock PocketBase
+│   ├── Dockerfile           # Multi-stage build: builds Svelte frontend + bundles stock PocketBase (+ pb_migrations, pb_hooks)
 │   └── fly.toml             # fly.io app configuration (app name, region, volume mount)
 ├── .claude/
 │   └── settings.json        # Claude Code hooks and permissions
@@ -59,7 +63,17 @@ makingmonsters/
 |------|---------|---------|
 | PocketBase | 0.23.0 | Backend-as-a-service (auth, DB, file storage, REST API) — used as the **stock release binary**, no custom code |
 
-There is no custom Go code. The backend is the official PocketBase release, which serves the built frontend from `pb_public/` and exposes its REST/realtime API and admin UI out of the box. If custom routes or hooks are needed later, reintroduce a small Go module that extends PocketBase and build it in place of the downloaded binary.
+There is no custom Go code. The backend is the official PocketBase release, which serves the built frontend from `pb_public/` and exposes its REST/realtime API and admin UI out of the box. Server-side logic is added with the stock binary's **JSVM** support — schema lives in `pb_migrations/` and hooks live in `pb_hooks/` (no recompile). If heavier custom routes are needed later, reintroduce a small Go module that extends PocketBase and build it in place of the downloaded binary.
+
+### Character event sourcing (implemented)
+
+A character is an event-sourced aggregate. `pb_migrations/` defines the collections and `pb_hooks/` folds events into read models:
+
+- **`characters`** — aggregate root (`owner`, `head_seq`).
+- **`events`** — append-only source of truth (`character`, `seq`, `type`, `payload`). API update/delete rules are `null` (immutable history); `(character, seq)` is unique.
+- **`attributes` / `conditions` / `actions`** — server-managed projections rebuildable from `events`; clients read them but only the hook writes them.
+
+Event `type`s: `attr_upsert|attr_delete|attr_set`, `cond_upsert|cond_delete|cond_toggle`, `action_upsert|action_delete|action_trigger`. On each appended event the `character_projection` hook validates the per-character sequence (`head_seq + 1`), rejects cyclic attribute dependencies, applies the projection, and bumps `head_seq` — all in the event's transaction, so a failure rolls the event back.
 
 ### Infrastructure (implemented)
 | Tool | Purpose |

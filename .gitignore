@@ -7,6 +7,9 @@ node_modules/
 # Build output + local runtime data (build/pb_public, build/pb_data, build/pocketbase)
 build/
 
+# PocketBase runtime data (created at runtime / on the fly.io volume)
+pb_data/
+
 # Editor/IDE
 # .idea/
 # .vscode/
